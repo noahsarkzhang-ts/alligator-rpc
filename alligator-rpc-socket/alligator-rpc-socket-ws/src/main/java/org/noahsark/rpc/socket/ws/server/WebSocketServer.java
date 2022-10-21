@@ -23,6 +23,8 @@ public final class WebSocketServer extends AbstractRemotingServer {
     public WebSocketServer(String host, int port) {
         super(host, port);
         registerDefaultPorcessor();
+
+        init();
     }
 
     @Override

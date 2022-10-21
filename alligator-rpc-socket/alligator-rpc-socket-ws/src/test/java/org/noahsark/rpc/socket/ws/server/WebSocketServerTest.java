@@ -1,13 +1,14 @@
 package org.noahsark.rpc.socket.ws.server;
 
 import org.junit.Test;
+import org.noahsark.rpc.common.constant.RpcCommandType;
 import org.noahsark.rpc.common.dispatcher.AbstractProcessor;
 import org.noahsark.rpc.common.remote.Response;
-import org.noahsark.rpc.common.remote.Result;
 import org.noahsark.rpc.common.remote.RpcContext;
 import org.noahsark.rpc.common.util.JsonUtils;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: noahsark
@@ -18,17 +19,20 @@ public class WebSocketServerTest {
 
     @Test
     public void testServer() {
-        String host = "192.168.9.103";
+        String host = "192.168.66.83";
         int port = 9090;
 
         // 请求
         // request = {"className":"inviter","method":"login","requestId":1,"version":"V1.0","payload":{"userName":"allan","password":"test"}}
 
         final WebSocketServer webSocketServer = new WebSocketServer(host, port);
-        webSocketServer.init();
+        // webSocketServer.init();
 
         UserLoginProcessor processor = new UserLoginProcessor();
         processor.register();
+
+        UsersProcessor usersProcessor = new UsersProcessor();
+        usersProcessor.register();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -38,6 +42,12 @@ public class WebSocketServerTest {
         });
 
         webSocketServer.start();
+
+        try {
+            TimeUnit.MINUTES.sleep(60);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class UserInfo {
@@ -71,6 +81,15 @@ public class WebSocketServerTest {
         public void setUserId(String userId) {
             this.userId = userId;
         }
+
+        @Override
+        public String toString() {
+            return "UserInfo{" +
+                    "userId='" + userId + '\'' +
+                    ", userName='" + userName + '\'' +
+                    ", password='" + password + '\'' +
+                    '}';
+        }
     }
 
     public static class TokenInfo {
@@ -93,6 +112,14 @@ public class WebSocketServerTest {
         public void setToken(String token) {
             this.token = token;
         }
+
+        @Override
+        public String toString() {
+            return "TokenInfo{" +
+                    "userName='" + userName + '\'' +
+                    ", token='" + token + '\'' +
+                    '}';
+        }
     }
 
     private static class UserLoginProcessor extends AbstractProcessor<UserInfo> {
@@ -104,21 +131,10 @@ public class WebSocketServerTest {
             tokenInfo.setUserName(request.getUserName());
             tokenInfo.setToken(UUID.randomUUID().toString());
 
-            Result<TokenInfo> result = new Result.Builder<TokenInfo>()
-                    .code(1)
-                    .message("success")
-                    .data(tokenInfo)
-                    .build();
-
-            Response response = new Response.Builder()
-                    .requestId(context.getCommand().getRequestId())
-                    .biz(context.getCommand().getBiz())
-                    .cmd(context.getCommand().getCmd())
-                    .payload(result)
-                    .build();
+            Response response = Response.buildResponse(context.getCommand(), RpcCommandType.RESPONSE,
+                    tokenInfo, 1, "success");
 
             String text = JsonUtils.toJson(response);
-
             System.out.println("text = " + text);
 
             context.sendResponse(response);
@@ -139,5 +155,49 @@ public class WebSocketServerTest {
             return 1000;
         }
 
+    }
+
+    private static class UsersProcessor extends AbstractProcessor<Void> {
+
+        @Override
+        protected void execute(Void request, RpcContext context) {
+
+            // 按照流的方式返回数据
+
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserId("1002");
+            userInfo.setUserName("allen");
+            userInfo.setPassword("allen");
+
+            Response response = Response.buildStream(context.getCommand(), userInfo, 1, "success");
+
+            // 发送第一批数据
+            context.flow(response);
+
+            userInfo = new UserInfo();
+            userInfo.setUserId("1003");
+            userInfo.setUserName("hunter");
+            userInfo.setPassword("hunter");
+
+            response = Response.buildStream(context.getCommand(), userInfo, 1, "success");
+
+            // 发送最后一批数据
+            context.end(response);
+        }
+
+        @Override
+        protected Class<Void> getParamsClass() {
+            return Void.class;
+        }
+
+        @Override
+        protected int getBiz() {
+            return 1;
+        }
+
+        @Override
+        protected int getCmd() {
+            return 1001;
+        }
     }
 }

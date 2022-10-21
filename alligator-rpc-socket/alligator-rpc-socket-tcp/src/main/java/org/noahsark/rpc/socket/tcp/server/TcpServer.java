@@ -31,6 +31,8 @@ public class TcpServer extends AbstractRemotingServer {
         super(host, port);
 
         registerDefaultPorcessor();
+
+        init();
     }
 
     @Override

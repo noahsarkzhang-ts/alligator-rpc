@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 客户端
+ *
  * @author zhangxt
  * @date 2021/3/14
  */
@@ -37,25 +38,55 @@ public abstract class AbstractRemotingClient implements RemotingClient {
 
     private static Logger log = LoggerFactory.getLogger(AbstractRemotingClient.class);
 
-    protected ServerInfo current;
-
-    private EventLoopGroup group;
-
+    /**
+     * 参数配置
+     */
     private Map<RemoteOption<?>, Object> clientOptions = new HashMap<>();
 
-    private WorkQueue workQueue;
+    /**
+     * 服务器信息
+     */
+    protected ServerInfo current;
 
-    protected ConnectionManager connectionManager;
-
+    /**
+     * 服务器管理器，用于服务器切换
+     */
     protected ServerManager serverManager;
 
+    /**
+     * 客户端工作队列
+     */
+    private WorkQueue workQueue;
+
+    /**
+     * 连接管理器
+     */
+    protected ConnectionManager connectionManager;
+
+    /**
+     * 客户端连接对象
+     */
     protected Connection connection;
 
+    /**
+     * Netty 事件循环对象
+     */
+    private EventLoopGroup group;
+
+    /**
+     * Netty 启动器
+     */
     private Bootstrap bootstrap;
 
+    /**
+     * 清理线程，清理过期的请求
+     */
     private ClientClearThread clearThread;
 
-    private Thread thread;
+    /**
+     * 通用任务线程，如重连任务
+     */
+    private CommonServiceThread commonThread;
 
     public AbstractRemotingClient() {
     }
@@ -116,6 +147,9 @@ public abstract class AbstractRemotingClient implements RemotingClient {
             clearThread = new ClientClearThread();
             clearThread.start();
 
+            commonThread = new CommonServiceThread();
+            commonThread.start();
+
             group = new NioEventLoopGroup();
 
             bootstrap = new Bootstrap();
@@ -161,15 +195,15 @@ public abstract class AbstractRemotingClient implements RemotingClient {
                 ChannelFuture future = bootstrap
                         .connect(current.getHost(), current.getPort());
                 future.addListener(getConnectionListener());
+
                 Channel channel = future.channel();
                 connection.setChannel(channel);
 
-                future.awaitUninterruptibly();
+                // future.awaitUninterruptibly();
             }
         };
 
-        thread = new Thread(runnable, "client-thread-");
-        thread.start();
+        commonThread.offer(runnable);
     }
 
     @Override
@@ -263,6 +297,7 @@ public abstract class AbstractRemotingClient implements RemotingClient {
             if (!future.isSuccess()) {
                 future.channel().pipeline().fireChannelInactive();
             } else {
+
                 EventBus.getInstance().post(new ClientConnectionSuccessEvent(null));
             }
         };

@@ -55,13 +55,12 @@ public class Connection implements PromisHolder {
 
     @Override
     public RpcPromise removePromis(Integer requestId) {
-        log.info("remove an promise: {}", requestId);
 
         RpcPromise promise = futures.get(requestId);
 
         if (promise.isRemoving()) {
             this.futures.remove(requestId);
-
+            log.info("remove an promise: {}", requestId);
         }
 
         return promise;

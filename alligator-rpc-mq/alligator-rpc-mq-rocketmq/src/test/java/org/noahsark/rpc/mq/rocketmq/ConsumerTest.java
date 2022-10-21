@@ -1,7 +1,9 @@
 package org.noahsark.rpc.mq.rocketmq;
 
+import org.apache.rocketmq.client.log.ClientLogger;
 import org.junit.Test;
 import org.noahsark.rpc.mq.common.DefaultmqMessageListener;
+import org.noahsark.rpc.mq.common.MessageListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +14,9 @@ public class ConsumerTest {
 
     @Test
     public void testConsumer() throws Exception{
+
+        System.setProperty(ClientLogger.CLIENT_LOG_USESLF4J,"true");
+
         RocketmqConsumer consumer = new RocketmqConsumer("test-consumer",
             "120.79.235.83:9876");
 
@@ -21,8 +26,15 @@ public class ConsumerTest {
 
         consumer.subscribe(topic);
 
-        consumer.registerMessageListener(new DefaultmqMessageListener(){
+        consumer.registerMessageListener(new MessageListener(){
 
+            @Override
+            public boolean consumeMessage(byte[] message) {
+
+                System.out.println("message = " + new String(message));
+
+                return true;
+            }
         });
 
         consumer.start();

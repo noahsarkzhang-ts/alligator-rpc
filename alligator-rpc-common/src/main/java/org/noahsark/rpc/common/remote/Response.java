@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * 响应类
+ *
  * @author zhangxt
  * @date 2021/3/13
  */

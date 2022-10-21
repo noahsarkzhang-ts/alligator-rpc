@@ -1,6 +1,7 @@
 package org.noahsark.rpc.common.remote;
 
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 /**
  * 多播请求类
+ *
  * @author zhangxt
  * @date 2021/4/22
  */
@@ -126,7 +128,7 @@ public class MultiRequest extends Request {
 
         encode(buf, command);
 
-        byte [] data = new byte[buf.readableBytes()];
+        byte[] data = new byte[buf.readableBytes()];
         buf.readBytes(data);
 
         return data;
@@ -160,8 +162,8 @@ public class MultiRequest extends Request {
 
         if (obj instanceof JsonObject) {
             payload = obj.toString().getBytes();
-        } else if (obj instanceof byte []) {
-            payload = (byte []) obj;
+        } else if (obj instanceof byte[]) {
+            payload = (byte[]) obj;
         } else {
             Serializer serializer = SerializerManager.getInstance()
                     .getSerializer(command.getSerializer());
@@ -314,8 +316,8 @@ public class MultiRequest extends Request {
         @Override
         public String toString() {
             return "Ping{" +
-                "load=" + load +
-                '}';
+                    "load=" + load +
+                    '}';
         }
     }
 
@@ -342,10 +344,10 @@ public class MultiRequest extends Request {
 
         System.out.println("multiRequest = " + multiRequest);
 
-        byte [] bData = MultiRequest.encode(multiRequest);
+        byte[] bData = MultiRequest.encode(multiRequest);
 
         System.out.println("ByteBufUtil.hexDump(bData) = " + ByteBufUtil.hexDump(bData));
-        
+
         MultiRequest multiRequest2 = MultiRequest.decode(bData);
 
         System.out.println("multiRequest2 = " + multiRequest2);

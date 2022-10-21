@@ -1,8 +1,10 @@
 package org.noahsark.rpc.socket.ws.client;
 
+import com.google.gson.JsonParser;
 import org.junit.Test;
 import org.noahsark.rpc.common.remote.CommandCallback;
 import org.noahsark.rpc.common.remote.Request;
+import org.noahsark.rpc.common.util.JsonUtils;
 import org.noahsark.rpc.socket.ws.server.WebSocketServerTest;
 
 import java.util.ArrayList;
@@ -16,40 +18,51 @@ import java.util.concurrent.TimeUnit;
  */
 public class WebSocketClientTest {
 
-
     @Test
-    public void clientTest() {
+    public void testRequestResponse() {
         WebSocketServerTest.UserInfo userInfo = new WebSocketServerTest.UserInfo();
         userInfo.setUserId("1002");
         userInfo.setUserName("allen");
         userInfo.setPassword("pwd");
 
-        singalServer(userInfo);
+        Request request = new Request.Builder()
+                .biz(1)
+                .cmd(1000)
+                .payload(userInfo)
+                .build();
 
-        userInfo = new WebSocketServerTest.UserInfo();
-        userInfo.setUserId("1003");
-        userInfo.setUserName("allen");
-        userInfo.setPassword("pwd");
-
-        singalServer(userInfo);
-
+        sendRequest(request);
     }
 
     @Test
-    public void testClient() {
-        WebSocketServerTest.UserInfo userInfo = new WebSocketServerTest.UserInfo();
+    public void testRequestStream() {
+        Request request = new Request.Builder()
+                .biz(1)
+                .cmd(1001)
+                .payload(null)
+                .build();
 
-
-        userInfo = new WebSocketServerTest.UserInfo();
-        userInfo.setUserId("1003");
-        userInfo.setUserName("allen");
-        userInfo.setPassword("pwd");
-
-        singalServer(userInfo);
+        sendRequest(request);
     }
 
-    private void singalServer(WebSocketServerTest.UserInfo userInfo) {
-        String url = System.getProperty("url", "ws://192.168.1.102:9091/websocket");
+
+    @Test
+    public void testReconnection(){
+        String url = System.getProperty("url", "ws://192.168.66.83:9090/websocket");
+
+        WebSocketClient client = new WebSocketClient(url);
+        client.connect();
+
+        try {
+            TimeUnit.HOURS.sleep(1);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendRequest(Request request) {
+
+        String url = System.getProperty("url", "ws://192.168.66.83:9090/websocket");
 
         WebSocketClient client = new WebSocketClient(url);
         client.registerProcessor(new InviteUserProcessor());
@@ -57,18 +70,13 @@ public class WebSocketClientTest {
 
         try {
 
-            TimeUnit.SECONDS.sleep(2);
-
-            Request request = new Request.Builder()
-                .biz(1)
-                .cmd(1)
-                .payload(userInfo)
-                .build();
+            TimeUnit.SECONDS.sleep(3);
 
             client.invoke(request, new CommandCallback() {
                 @Override
                 public void callback(Object result, int currentFanout, int fanout) {
-                    System.out.println("result = " + result);
+
+                    System.out.println("result = " + ((result instanceof byte[]) ? new JsonParser().parse(new String((byte[]) result)).getAsJsonObject() : result));
                 }
 
                 @Override
@@ -85,7 +93,6 @@ public class WebSocketClientTest {
             client.shutdown();
         }
     }
-
 
     @Test
     public void multiServerTest() {

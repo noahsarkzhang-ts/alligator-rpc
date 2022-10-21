@@ -318,6 +318,8 @@ public class RpcPromise extends DefaultPromise<Object> implements Comparable<Rpc
                 promisHolder.write(request);
             }
 
+            log.info("send message: {}", request);
+
         } catch (Exception ex) {
             log.error("Exception caught when sending invocation. The requestId is " + request
                     .getRequestId(), ex);

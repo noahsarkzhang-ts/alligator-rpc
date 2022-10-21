@@ -42,7 +42,7 @@ public class JsonUtils {
     /**
      * @param json  json字串
      * @param clazz 反序列化的类
-     * @return org.noahsark.server.rpc.Result<java.util.List   <   T>>
+     * @return org.noahsark.server.rpc.Result<java.util.List               <               T>>
      * @author zhangxt
      * @date 2021/11/06 12:16
      */

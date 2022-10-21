@@ -1,7 +1,9 @@
 package org.noahsark.rpc.common.remote;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.Expose;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,6 +15,7 @@ import java.io.Serializable;
 
 /**
  * RPC 命令类
+ *
  * @author zhangxt
  * @date 2021/3/26
  */
@@ -37,7 +40,6 @@ public class RpcCommand implements Serializable {
 
     /**
      * 命令id
-     *
      */
     private int cmd;
 
@@ -158,7 +160,7 @@ public class RpcCommand implements Serializable {
 
         byte[] payload;
 
-        if (! (command.getPayload() instanceof byte [])) {
+        if (!(command.getPayload() instanceof byte[])) {
             Serializer serializer = SerializerManager.getInstance()
                     .getSerializer(command.getSerializer());
             payload = serializer.encode(command.getPayload());
@@ -174,7 +176,7 @@ public class RpcCommand implements Serializable {
         RpcCommand command = new RpcCommand();
 
         JsonObject data = new JsonParser().parse(json).getAsJsonObject();
-        command.setHeadSize(data.get("headSize").getAsShort());
+        // command.setHeadSize(data.get("headSize").getAsShort());
         command.setRequestId(data.get("requestId").getAsInt());
         command.setBiz(data.get("biz").getAsInt());
         command.setCmd(data.get("cmd").getAsInt());
@@ -182,7 +184,11 @@ public class RpcCommand implements Serializable {
         command.setEnd(data.get("end").getAsByte());
         command.setVer(data.get("ver").getAsByte());
         command.setSerializer(data.get("serializer").getAsByte());
-        command.setPayload(data.get("payload").getAsJsonObject().toString().getBytes(CharsetUtil.UTF_8));
+
+        JsonElement payload = data.get("payload");
+        if (payload != null) {
+            command.setPayload(payload.getAsJsonObject().toString().getBytes(CharsetUtil.UTF_8));
+        }
 
         return command;
     }
@@ -198,7 +204,7 @@ public class RpcCommand implements Serializable {
                 ", end=" + end +
                 ", ver=" + ver +
                 ", serializer=" + serializer +
-                ", payload=" + ((payload instanceof byte[]) ? new JsonParser().parse(new String((byte[]) payload)).getAsJsonObject() : payload) +
+                ", payload=" + ((payload != null && payload instanceof byte[]) ? new JsonParser().parse(new String((byte[]) payload)).getAsJsonObject() : payload) +
                 '}';
     }
 

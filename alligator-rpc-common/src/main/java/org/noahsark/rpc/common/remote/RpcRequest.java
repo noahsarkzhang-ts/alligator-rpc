@@ -62,4 +62,11 @@ public class RpcRequest {
             return new RpcRequest(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "RpcRequest{"
+                + "request=" + request
+                + '}';
+    }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 /**
  * ping 对象
+ *
  * @author zhangxt
  * @date 2021/4/2
  */
@@ -36,8 +37,8 @@ public class Ping implements Serializable {
 
     @Override
     public String toString() {
-        return "Ping{" +
-            "load=" + load +
-            '}';
+        return "Ping{"
+                + "load=" + load
+                + '}';
     }
 }

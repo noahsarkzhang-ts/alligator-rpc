@@ -14,11 +14,11 @@ public class TcpServerTest {
 
     @Test
     public void tcpServerTest() {
-        String host = "192.168.68.25";
+        String host = "192.168.66.83";
         int port = 2222;
 
         final TcpServer tcpServer = new TcpServer(host, port);
-        tcpServer.init();
+        //tcpServer.init();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

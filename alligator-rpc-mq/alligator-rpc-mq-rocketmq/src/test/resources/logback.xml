@@ -26,6 +26,28 @@
         </triggeringPolicy>
     </appender>
 
+    <!-- rocketmq日志 -->
+    <appender name="RocketmqClientAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/online_rocketmq_client.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/online_rocketmq_client.%d{yyyyMMdd}.log</fileNamePattern>
+            <!--<maxFileSize>1024M</maxFileSize>-->
+            <!--保留时间,单位:天-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d{yy-MM-dd.HH:mm:ss.SSS} [%-16t] %-5p %-22c{0} %X{ServiceId} - %m%n</pattern>
+        </encoder>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>100MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <logger name="RocketmqClient" additivity="false">
+        <level value="info"/>
+        <appender-ref ref="RocketmqClientAppender"/>
+    </logger>
+
     <!-- 日志输出级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

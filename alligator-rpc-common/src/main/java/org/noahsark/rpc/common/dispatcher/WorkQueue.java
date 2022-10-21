@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 工作队列
+ *
  * @author zhangxt
  * @date 2020/12/3
  */
@@ -55,7 +56,7 @@ public class WorkQueue {
 
     public void add(Runnable task) {
         if (this.queue.size() <= maxQueueNum) {
-            log.info("Add request: {}", task);
+            // log.info("Add request: {}", task);
 
             this.queue.add(task);
         } else {
