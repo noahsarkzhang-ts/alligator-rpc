@@ -32,9 +32,4 @@
         <appender-ref ref="FILE"/>
     </root>
 
-    <logger name="com.hst.dbproxy" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-
 </configuration>
