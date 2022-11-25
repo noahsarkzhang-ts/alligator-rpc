@@ -36,6 +36,8 @@ public class Session implements ChannelHolder {
 
     private Date lastAccessTime;
 
+    private boolean connectCompleted = false;
+
     public Session(Connection connection) {
         this.sessionId = UUID.randomUUID().toString();
         this.lastAccessTime = new Date();
@@ -151,6 +153,9 @@ public class Session implements ChannelHolder {
         return connection.getChannel();
     }
 
+    public void connectComplete() {
+        this.connectCompleted = false;
+    }
 
     @Override
     public boolean equals(Object o) {

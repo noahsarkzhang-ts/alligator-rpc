@@ -19,6 +19,7 @@ import org.noahsark.rpc.common.remote.RpcPromise;
 import org.noahsark.rpc.socket.event.ClientConnectionSuccessEvent;
 import org.noahsark.rpc.socket.eventbus.EventBus;
 import org.noahsark.rpc.socket.session.ConnectionManager;
+import org.noahsark.rpc.socket.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,11 @@ public abstract class AbstractRemotingClient implements RemotingClient {
      * 客户端连接对象
      */
     protected Connection connection;
+
+    /**
+     * 客户端会话对象
+     */
+    private Session session;
 
     /**
      * Netty 事件循环对象
@@ -190,20 +196,40 @@ public abstract class AbstractRemotingClient implements RemotingClient {
     @Override
     public void connect() {
 
-        Runnable runnable = () -> {
-            synchronized (bootstrap) {
-                ChannelFuture future = bootstrap
+        Runnable runnable = () -> internalConnect();
+
+        commonThread.offer(runnable);
+    }
+
+    @Override
+    public Session connectAndSession() {
+
+        internalConnect();
+
+        return session;
+    }
+
+    private void internalConnect() {
+        synchronized (bootstrap) {
+            ChannelFuture future;
+
+            try {
+                future = bootstrap
                         .connect(current.getHost(), current.getPort());
                 future.addListener(getConnectionListener());
 
-                Channel channel = future.channel();
+                // log.info("connect is Done: {}", future.isDone());
+
+                Channel channel = future.sync().channel();
                 connection.setChannel(channel);
 
-                // future.awaitUninterruptibly();
+                session = Session.getOrCreatedSession(connection);
+            } catch (InterruptedException ex) {
+                log.warn("catch an exception.", ex);
             }
-        };
 
-        commonThread.offer(runnable);
+
+        }
     }
 
     @Override
@@ -298,6 +324,7 @@ public abstract class AbstractRemotingClient implements RemotingClient {
                 future.channel().pipeline().fireChannelInactive();
             } else {
 
+                log.info("Connect Completely!!!");
                 EventBus.getInstance().post(new ClientConnectionSuccessEvent(null));
             }
         };

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.noahsark.rpc.common.remote.CommandCallback;
 import org.noahsark.rpc.common.remote.Request;
 import org.noahsark.rpc.common.util.JsonUtils;
+import org.noahsark.rpc.socket.session.Session;
 import org.noahsark.rpc.socket.ws.server.WebSocketServerTest;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class WebSocketClientTest {
 
 
     @Test
-    public void testReconnection(){
+    public void testReconnection() {
         String url = System.getProperty("url", "ws://192.168.66.83:9090/websocket");
 
         WebSocketClient client = new WebSocketClient(url);
@@ -66,13 +67,18 @@ public class WebSocketClientTest {
 
         WebSocketClient client = new WebSocketClient(url);
         client.registerProcessor(new InviteUserProcessor());
-        client.connect();
+
+        // case 1:
+        // client.connect();
+
+        // case 2:
+        Session session = client.connectAndSession();
 
         try {
 
-            TimeUnit.SECONDS.sleep(3);
+            //TimeUnit.SECONDS.sleep(1);
 
-            client.invoke(request, new CommandCallback() {
+            session.invoke(request, new CommandCallback() {
                 @Override
                 public void callback(Object result, int currentFanout, int fanout) {
 

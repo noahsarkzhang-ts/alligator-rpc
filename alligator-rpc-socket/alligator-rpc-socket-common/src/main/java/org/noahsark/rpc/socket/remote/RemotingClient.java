@@ -5,6 +5,7 @@ import org.noahsark.rpc.common.remote.Request;
 import org.noahsark.rpc.common.remote.RpcCommand;
 import org.noahsark.rpc.common.remote.RpcPromise;
 import org.noahsark.rpc.socket.session.ConnectionManager;
+import org.noahsark.rpc.socket.session.Session;
 
 /**
  * 客户端接口
@@ -18,6 +19,11 @@ public interface RemotingClient {
      * 连接服务器
      */
     void connect();
+
+    /**
+     * 连接服务器
+     */
+    Session connectAndSession();
 
     /**
      * 关闭连接

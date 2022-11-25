@@ -23,11 +23,13 @@ import org.noahsark.rpc.socket.remote.AbstractRemotingClient;
 import org.noahsark.rpc.socket.remote.ExponentialBackOffRetry;
 import org.noahsark.rpc.socket.remote.ServerInfo;
 import org.noahsark.rpc.socket.session.ConnectionManager;
+import org.noahsark.rpc.socket.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Websocket 客户端
@@ -109,6 +111,20 @@ public final class WebSocketClient extends AbstractRemotingClient {
         return serverInfo;
     }
 
+    @Override
+    public Session connectAndSession() {
+
+        Session session = super.connectAndSession();
+
+        try {
+            // 1. 如果建立WS连接便马上发起请求，此时 WS 未初始化完成，会有异常；
+            // 为了避免该问题，休眠 500 MS.
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+        }
+
+        return session;
+    }
 
     public static void main(String[] args) throws Exception {
 
