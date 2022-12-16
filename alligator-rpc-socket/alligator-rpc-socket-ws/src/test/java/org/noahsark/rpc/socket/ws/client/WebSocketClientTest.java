@@ -46,7 +46,6 @@ public class WebSocketClientTest {
         sendRequest(request);
     }
 
-
     @Test
     public void testReconnection() {
         String url = System.getProperty("url", "ws://192.168.66.83:9090/websocket");

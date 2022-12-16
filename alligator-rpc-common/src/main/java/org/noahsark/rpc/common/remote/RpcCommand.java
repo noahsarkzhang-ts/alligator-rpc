@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.CharsetUtil;
+import org.noahsark.rpc.common.constant.SerializerType;
 import org.noahsark.rpc.common.serializer.Serializer;
 import org.noahsark.rpc.common.serializer.SerializerManager;
 
@@ -87,6 +88,10 @@ public class RpcCommand implements Serializable {
         this.ver = builder.ver;
         this.serializer = builder.serializer;
         this.payload = builder.payload;
+
+        if (this.serializer == 0) {
+            this.serializer = SerializerType.JSON;
+        }
     }
 
     public static ByteBuf encode(ChannelHandlerContext ctx, RpcCommand command) {
@@ -204,7 +209,7 @@ public class RpcCommand implements Serializable {
                 ", end=" + end +
                 ", ver=" + ver +
                 ", serializer=" + serializer +
-                ", payload=" + ((payload != null && payload instanceof byte[]) ? new JsonParser().parse(new String((byte[]) payload)).getAsJsonObject() : payload) +
+                ", payload=" + ((payload != null && payload instanceof byte[]) ? payload.getClass() : payload) +
                 '}';
     }
 

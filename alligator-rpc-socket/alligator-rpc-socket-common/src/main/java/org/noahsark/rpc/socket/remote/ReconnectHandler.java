@@ -37,7 +37,6 @@ public class ReconnectHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-
         boolean allowRetry = getRetryPolicy().allowRetry(retries);
         if (allowRetry) {
 

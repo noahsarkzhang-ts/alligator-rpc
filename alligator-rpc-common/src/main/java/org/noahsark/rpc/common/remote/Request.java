@@ -72,7 +72,6 @@ public class Request extends RpcCommand implements Serializable {
 
             this.commandBuilder.type(RpcCommandType.REQUEST);
             this.commandBuilder.ver(RpcCommandVer.V1);
-            this.commandBuilder.serializer(SerializerType.JSON);
 
             return new Request(this);
         }

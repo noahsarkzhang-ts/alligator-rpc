@@ -28,12 +28,12 @@ public class JsonUtils {
         return GSON.fromJson(json, classz);
     }
 
-    public static <T> Result<T> fromJsonObject(String json, Class<T> clazz) {
+    public static Result fromJsonObject(String json, Class<?> clazz) {
         Type type = new ParameterizedTypeImpl(Result.class, new Class[]{clazz});
         return GSON.fromJson(json, type);
     }
 
-    public static Result<Void> fromCommonObject(byte[] object) {
+    public static Result fromCommonObject(byte[] object) {
         String json = new String((byte[]) object, CharsetUtil.UTF_8);
 
         return JsonUtils.fromJsonObject(json, Void.class);
@@ -42,11 +42,11 @@ public class JsonUtils {
     /**
      * @param json  json字串
      * @param clazz 反序列化的类
-     * @return org.noahsark.server.rpc.Result<java.util.List               <               T>>
+     * @return org.noahsark.server.rpc.Result<java.util.List                                                               <                                                               T>>
      * @author zhangxt
      * @date 2021/11/06 12:16
      */
-    public static <T> Result<List<T>> fromJsonArray(String json, Class<T> clazz) {
+    public static <T> Result fromJsonArray(String json, Class<T> clazz) {
         // 生成List<T> 中的 List<T>
         Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
         // 根据List<T>生成完整的Result<List<T>>

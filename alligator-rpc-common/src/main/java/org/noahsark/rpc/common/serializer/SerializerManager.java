@@ -7,6 +7,7 @@ import java.util.Map;
 
 /**
  * 序列化管理类
+ *
  * @author zhangxt
  * @date 2021/4/2
  */
@@ -23,6 +24,10 @@ public class SerializerManager {
 
     public static SerializerManager getInstance() {
         return SerializerManagerHolder.INSTANCE;
+    }
+
+    public void register(Byte type, Serializer serializer) {
+        serializerMap.put(type, serializer);
     }
 
     public Serializer getSerializer(byte type) {

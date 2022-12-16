@@ -9,6 +9,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.noahsark.rpc.common.dispatcher.WorkQueue;
 import org.noahsark.rpc.socket.handler.ClientBizServiceHandler;
 import org.noahsark.rpc.socket.handler.ClientIdleStateTrigger;
+import org.noahsark.rpc.socket.handler.ConnectionInactiveHandler;
 import org.noahsark.rpc.socket.remote.AbstractRemotingClient;
 import org.noahsark.rpc.socket.remote.ReconnectHandler;
 import org.noahsark.rpc.socket.tcp.handler.CommandDecoder;
@@ -44,7 +45,7 @@ public class ClientHandlersInitializer extends ChannelInitializer<SocketChannel>
         pipeline.addLast(new IdleStateHandler(0, 15, 0));
         pipeline.addLast(new ClientIdleStateTrigger(this.client));
         pipeline.addLast(reconnectHandler);
-
+        pipeline.addLast(new ConnectionInactiveHandler());
         pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
         pipeline.addLast(new CommandDecoder());

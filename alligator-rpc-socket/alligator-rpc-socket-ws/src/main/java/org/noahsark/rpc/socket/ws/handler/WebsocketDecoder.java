@@ -24,8 +24,8 @@ public class WebsocketDecoder extends SimpleChannelInboundHandler<WebSocketFrame
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
-        Response response = null;
-        Result<Void> result = new Result<>();
+        Response response;
+        Result result = new Result();
         String message = null;
 
         try {

@@ -7,18 +7,18 @@ import java.io.Serializable;
  * @author zhangxt
  * @date 2021/3/26
  */
-public class Result<R> implements Serializable {
+public class Result implements Serializable {
 
     private int code;
 
     private String message;
 
-    private R data;
+    private Object data;
 
     public Result() {
     }
 
-    public Result(Builder<R> builder) {
+    public Result(Builder builder) {
         this.code = builder.code;
         this.message = builder.message;
         this.data = builder.data;
@@ -40,11 +40,11 @@ public class Result<R> implements Serializable {
         this.message = message;
     }
 
-    public R getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(R data) {
+    public void setData(Object data) {
         this.data = data;
     }
 
@@ -57,28 +57,28 @@ public class Result<R> implements Serializable {
                 '}';
     }
 
-    public static class Builder<R> {
+    public static class Builder {
         private int code;
         private String message;
-        private R data;
+        private Object data;
 
-        public Builder<R> code(int code) {
+        public Builder code(int code) {
             this.code = code;
             return this;
         }
 
-        public Builder<R> message(String message) {
+        public Builder message(String message) {
             this.message = message;
             return this;
         }
 
-        public Builder<R> data(R data) {
+        public Builder data(Object data) {
             this.data = data;
             return this;
         }
 
-        public Result<R> build() {
-            return new Result<>(this);
+        public Result build() {
+            return new Result(this);
         }
     }
 }

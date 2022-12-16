@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Pong 处理器
+ *
  * @author zhangxt
  * @date 2021/4/3
  */
@@ -31,16 +32,16 @@ public class PongHandler extends SimpleChannelInboundHandler<RpcCommand> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcCommand msg) throws Exception {
         if (msg.getBiz() == 1 && msg.getCmd() == 1
-            && msg.getType() == RpcCommandType.RESPONSE) {
+                && msg.getType() == RpcCommandType.RESPONSE) {
 
-            byte [] result = (byte[]) msg.getPayload();
+            byte[] result = (byte[]) msg.getPayload();
             String json = new String(result, CharsetUtil.UTF_8);
 
             // 清空心跳计数
             client.getConnectionManager().getHeartbeatStatus().reset();
 
-            log.info("receive a pong message:{}", JsonUtils.toJson(JsonUtils
-                .fromJsonObject(json,Void.class)));
+            log.debug("receive a pong message:{}", JsonUtils.toJson(JsonUtils
+                    .fromJsonObject(json, Void.class)));
 
             return;
         } else {

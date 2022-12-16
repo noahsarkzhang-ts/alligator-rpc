@@ -30,7 +30,7 @@ public class ClientIdleStateTrigger extends ChannelInboundHandlerAdapter {
             IdleState state = ((IdleStateEvent) evt).state();
             if (state == IdleState.WRITER_IDLE) {
 
-                log.info("Idle timeout,send heart beat!");
+                log.debug("Idle timeout,send heart beat!");
 
                 HeartbeatStatus heartbeatStatus = remotingClient.getConnectionManager()
                     .getHeartbeatStatus();

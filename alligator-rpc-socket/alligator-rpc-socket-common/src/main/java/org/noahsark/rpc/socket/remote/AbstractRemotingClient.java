@@ -94,6 +94,11 @@ public abstract class AbstractRemotingClient implements RemotingClient {
      */
     private CommonServiceThread commonThread;
 
+    /**
+     * 事件对象
+     */
+    private Object eventSource;
+
     public AbstractRemotingClient() {
     }
 
@@ -199,6 +204,17 @@ public abstract class AbstractRemotingClient implements RemotingClient {
         Runnable runnable = () -> internalConnect();
 
         commonThread.offer(runnable);
+    }
+
+    @Override
+    public void connect(Object source) {
+        this.eventSource = source;
+        connect();
+    }
+
+    @Override
+    public Session getSession() {
+        return session;
     }
 
     @Override
@@ -320,12 +336,16 @@ public abstract class AbstractRemotingClient implements RemotingClient {
 
     private ChannelFutureListener getConnectionListener() {
         return future -> {
+
+            connection.setChannel(future.channel());
+            session = Session.getOrCreatedSession(connection);
+
             if (!future.isSuccess()) {
                 future.channel().pipeline().fireChannelInactive();
             } else {
 
                 log.info("Connect Completely!!!");
-                EventBus.getInstance().post(new ClientConnectionSuccessEvent(null));
+                EventBus.getInstance().post(new ClientConnectionSuccessEvent(eventSource));
             }
         };
     }

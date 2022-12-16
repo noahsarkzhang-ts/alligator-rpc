@@ -25,24 +25,33 @@ public class Session implements ChannelHolder {
 
     public static final String SESSION_KEY_NAME = "NOAHSARK_SESSION";
 
-    public static final AttributeKey<String> SESSION_KEY = AttributeKey
-            .newInstance(SESSION_KEY_NAME);
+    public static final AttributeKey<String> SESSION_KEY = AttributeKey.newInstance(SESSION_KEY_NAME);
 
+    // 会话状态
+    private SessionStatus status;
+
+    // 客户端/服务端会话
+    private SessionEndpointType endpointType = SessionEndpointType.SERVER;
+
+    // 会话id
     private String sessionId;
 
+    // 绑定的用户
     private Subject subject;
 
+    // 关联的连接对象
     private Connection connection;
 
+    // 最后访问的时间
     private Date lastAccessTime;
-
-    private boolean connectCompleted = false;
 
     public Session(Connection connection) {
         this.sessionId = UUID.randomUUID().toString();
         this.lastAccessTime = new Date();
 
         this.connection = connection;
+
+        status = SessionStatus.CONNECTED;
     }
 
     @Override
@@ -125,6 +134,26 @@ public class Session implements ChannelHolder {
         this.subject = subject;
     }
 
+    public void setStatus(SessionStatus expected) {
+        status = expected;
+    }
+
+    public SessionStatus getStatus() {
+        return this.status;
+    }
+
+    public SessionEndpointType getEndpointType() {
+        return endpointType;
+    }
+
+    public void setEndpointType(SessionEndpointType endpointType) {
+        this.endpointType = endpointType;
+    }
+
+    public void disconnect() {
+        status = SessionStatus.DISCONNECTED;
+    }
+
     public Date getLastAccessTime() {
         return lastAccessTime;
     }
@@ -153,10 +182,6 @@ public class Session implements ChannelHolder {
         return connection.getChannel();
     }
 
-    public void connectComplete() {
-        this.connectCompleted = false;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -172,6 +197,14 @@ public class Session implements ChannelHolder {
     @Override
     public int hashCode() {
         return Objects.hash(getSessionId());
+    }
+
+    public enum SessionStatus {
+        CONNECTED, DISCONNECTED, AUTHORIZED
+    }
+
+    public enum SessionEndpointType {
+        CLIENT, SERVER
     }
 
 }

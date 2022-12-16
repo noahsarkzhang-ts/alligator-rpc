@@ -31,7 +31,7 @@ public class RequestHandler {
                                       WorkQueue workQueue, Session session) {
 
         Response response;
-        Result<Void> result = new Result<>();
+        Result result = new Result();
 
         try {
             RpcContext rpcContext = new RpcContext.Builder()
