@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Ping 消息处理器
+ *
  * @author zhangxt
  * @date 2021/4/3
  */
@@ -19,7 +20,7 @@ public class PingProcessor extends AbstractProcessor<Ping> {
 
     @Override
     protected void execute(Ping request, RpcContext context) {
-        log.info("Receive a ping message: {}", JsonUtils.toJson(request));
+        log.debug("Receive a ping message: {}", JsonUtils.toJson(request));
 
         RpcCommand command = CommonHeartbeatFactory.getPong(context.getCommand());
 

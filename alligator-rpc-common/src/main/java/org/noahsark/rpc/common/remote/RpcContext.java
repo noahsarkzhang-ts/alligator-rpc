@@ -25,7 +25,7 @@ public class RpcContext {
     }
 
     public void sendResponse(RpcCommand response) {
-        log.info("send response:{}", response);
+        log.debug("send response:{}", response);
 
         session.write(response);
     }
@@ -33,7 +33,7 @@ public class RpcContext {
     public void flow(RpcCommand stream) {
         stream.setEnd((byte) 0);
 
-        log.info("send stream:{}", stream);
+        log.debug("send stream:{}", stream);
         session.write(stream);
 
     }
@@ -41,7 +41,7 @@ public class RpcContext {
     public void end(RpcCommand stream) {
         stream.setEnd((byte) 1);
 
-        log.info("send stream:{}", stream);
+        log.debug("send stream:{}", stream);
         session.write(stream);
 
     }

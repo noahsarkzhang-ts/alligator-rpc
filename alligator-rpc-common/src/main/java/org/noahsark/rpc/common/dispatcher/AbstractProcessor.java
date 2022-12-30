@@ -71,7 +71,7 @@ public abstract class AbstractProcessor<T> implements Runnable {
                     request = serializer.decode((byte[]) params, getParamsClass());
                 }
 
-                log.info("receive a request: {}", rpcRequest);
+                log.debug("receive a request: {}", rpcRequest);
             }
 
             execute(request, rpcRequest.getContext());
